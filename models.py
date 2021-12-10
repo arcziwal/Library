@@ -21,6 +21,20 @@ class Author:
             cursor.execute(sql, values)
             return True
 
+    @staticmethod
+    def load_all_authors(cursor):
+        sql = "SELECT id, first_name, last_name FROM authors"
+        authors = []
+        cursor.execute(sql)
+        for row in cursor.fetchall():
+            id_, first_name, last_name = row
+            author = Author()
+            author._id = id_
+            author.first_name = first_name
+            author.last_name = last_name
+            authors.append(author)
+        return authors
+
 
 class Book:
     def __init__(self, author_id, title="", isbn="", description=""):
