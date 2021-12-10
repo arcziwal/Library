@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Table of books in database</title>
+</head>
+<body>
+<table>
+    <thead>
+    <th>Tytuł</th>
+    <th>Autor</th>
+    <th>Numer ISBN</th>
+    </thead>
+
+    <tbody>
+        {% for book in books %}
+            <tr>
+                <td>{{ book[0] }}</td>
+                <td>{{ book[1] }}</td>
+                <td>{{ book[2] }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>
