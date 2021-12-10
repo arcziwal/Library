@@ -95,3 +95,15 @@ class Book:
             books.append(book)
         return books
 
+    @staticmethod
+    def load_book_by_id(cursor, book_id):
+        sql = "SELECT title, isbn, author_id, description FROM books WHERE id=%s"
+        cursor.execute(sql, (int(book_id),))
+        book_title, book_isbn, book_author_id, book_description = cursor.fetchone()
+        book = Book()
+        book._id = book_id
+        book.title = book_title
+        book.isbn = book_isbn
+        book.author_id = book_author_id
+        book.description = book_description
+        return book

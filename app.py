@@ -46,8 +46,23 @@ def show_all_books():
     for book in books:
         author_name = Author.load_author_by_id(cursor, book.author_id)
         data_to_show.append((book.title, author_name, book.isbn))
-    print(data_to_show)
+    cursor.close()
+    cnx.close()
     return render_template("book_list.html", books=data_to_show)
+
+
+@app.route("/book_details/<int:book_index>", methods=['GET'])
+def show_book_details(book_index):
+    cnx = connect(database=DATABASE, user=USER, password=PASSWORD, host=HOST)
+    cursor = cnx.cursor()
+    cnx.autocommit = True
+    book = Book.load_book_by_id(cursor, book_index)
+    return f"""
+<h3>Tytuł:</h3> <p>{book.title}</p>
+<h3>Autor:</h3> <p>{Author.load_author_by_id(cursor, book.author_id)}</p>
+<h3>Numer ISBN:</h3> <p>{book.isbn}</p>
+<h3>Opis:</h3> <p>{book.description}</p>
+    """
 
 
 if __name__ == "__main__":
