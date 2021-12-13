@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete book from database</title>
+</head>
+<body>
+<form action="/delete_book" method="POST">
+<table>
+    <thead>
+        <th>Tytuł</th>
+        <th>Autor</th>
+        <th>Numer ISBN</th>
+        <th>USUŃ</th>
+    </thead>
+    <tbody>
+        {% for book in books %}
+            <tr>
+                <td>{{ book[0] }}</td>
+                <td>{{ book[1] }}</td>
+                <td>{{ book[2] }}</td>
+                <td>
+                    <label for="book"></label>
+                    <input type="checkbox" name="{{ book[0] }}" id="book">
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+    <input type="submit" value="USUŃ ZAZNACZONE">
+</form>
+</body>
+</html>

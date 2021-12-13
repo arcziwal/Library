@@ -3,7 +3,7 @@ from models import Author, Book
 from psycopg2 import connect, OperationalError
 import os
 
-#  DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_URL = os.environ['DATABASE_URL']
 LOCAL_HOST = "127.0.0.1"
 LOCAL_DB = "library_db"
 LOCAL_USER = "postgres"
@@ -29,7 +29,7 @@ def index():
 
 @app.route('/add_book', methods=['GET', 'POST'])
 def add_book_to_db():
-    cnx = connect_to_test_db()
+    cnx = connect_to_production_db()
     cursor = cnx.cursor()
     cnx.autocommit = True
     if request.method == "GET":
@@ -55,7 +55,7 @@ def add_book_to_db():
 
 @app.route('/books', methods=['GET'])
 def show_all_books():
-    cnx = connect_to_test_db()
+    cnx = connect_to_production_db()
     cursor = cnx.cursor()
     cnx.autocommit = True
     books = Book.load_all_books(cursor)
@@ -70,7 +70,7 @@ def show_all_books():
 
 @app.route("/book_details/<int:book_index>", methods=['GET'])
 def show_book_details(book_index):
-    cnx = connect_to_test_db()
+    cnx = connect_to_production_db()
     cursor = cnx.cursor()
     cnx.autocommit = True
     book = Book.load_book_by_id(cursor, book_index)
@@ -89,7 +89,7 @@ def add_author_to_db():
     else:
         first_name = request.form['first_name']
         last_name = request.form['last_name']
-        cnx = connect_to_test_db()
+        cnx = connect_to_production_db()
         cnx.autocommit = True
         cursor = cnx.cursor()
         author = Author(first_name, last_name)
@@ -98,5 +98,26 @@ def add_author_to_db():
         cnx.close()
         return f"Autor: <b>{author.full_name}</b> został dodany do bazy danych"
 
+
+@app.route('/delete_book', methods=['GET', 'POST'])
+def delete_book_from_db():
+    if request.method == "GET":
+        cnx = connect_to_test_db()
+        cursor = cnx.cursor()
+        cnx.autocommit = True
+        books = Book.load_all_books(cursor)
+        data_to_show = []
+        for book in books:
+            author_name = Author.load_author_by_id(cursor, book.author_id)
+            data_to_show.append((book.title, author_name, book.isbn))
+        cursor.close()
+        cnx.close()
+        return render_template("delete_book_table.html", books=data_to_show)
+    elif request.method == "POST":
+        book_to_delete = request.form.get('Harry Potter i kamień filozoficzny')
+        book_not_to_delete = request.form.get('Harry Potter i czara ognia')
+        return f"""To delete: {book_to_delete}
+        Not to delete: {book_not_to_delete}
+        """
 
 
