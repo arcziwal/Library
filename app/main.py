@@ -3,9 +3,23 @@ from models import Author, Book
 from psycopg2 import connect, OperationalError
 import os
 
-DATABASE_URL = os.environ['DATABASE_URL']
+#  DATABASE_URL = os.environ['DATABASE_URL']
+LOCAL_HOST = "127.0.0.1"
+LOCAL_DB = "library_db"
+LOCAL_USER = "postgres"
+LOCAL_PASSWORD = "coderslab"
 
 app = Flask(__name__)
+
+
+def connect_to_test_db():
+    cnx = connect(user=LOCAL_USER, password=LOCAL_PASSWORD, host=LOCAL_HOST, database=LOCAL_DB)
+    return cnx
+
+
+def connect_to_production_db():
+    cnx = connect(DATABASE_URL, sslmode='require')
+    return cnx
 
 
 @app.route('/')
@@ -15,7 +29,7 @@ def index():
 
 @app.route('/add_book', methods=['GET', 'POST'])
 def add_book_to_db():
-    cnx = connect(DATABASE_URL, sslmode='require')
+    cnx = connect_to_test_db()
     cursor = cnx.cursor()
     cnx.autocommit = True
     if request.method == "GET":
@@ -41,7 +55,7 @@ def add_book_to_db():
 
 @app.route('/books', methods=['GET'])
 def show_all_books():
-    cnx = connect(DATABASE_URL, sslmode='require')
+    cnx = connect_to_test_db()
     cursor = cnx.cursor()
     cnx.autocommit = True
     books = Book.load_all_books(cursor)
@@ -56,7 +70,7 @@ def show_all_books():
 
 @app.route("/book_details/<int:book_index>", methods=['GET'])
 def show_book_details(book_index):
-    cnx = connect(database=DATABASE, user=USER, password=PASSWORD, host=HOST)
+    cnx = connect_to_test_db()
     cursor = cnx.cursor()
     cnx.autocommit = True
     book = Book.load_book_by_id(cursor, book_index)
@@ -66,6 +80,23 @@ def show_book_details(book_index):
 <h3>Numer ISBN:</h3> <p>{book.isbn}</p>
 <h3>Opis:</h3> <p>{book.description}</p>
     """
+
+
+@app.route('/add_author', methods=['GET', 'POST'])
+def add_author_to_db():
+    if request.method == "GET":
+        return render_template('add_author_from.html')
+    else:
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        cnx = connect_to_test_db()
+        cnx.autocommit = True
+        cursor = cnx.cursor()
+        author = Author(first_name, last_name)
+        author.save_to_db(cursor)
+        cursor.close()
+        cnx.close()
+        return f"Autor: <b>{author.full_name}</b> został dodany do bazy danych"
 
 
 
