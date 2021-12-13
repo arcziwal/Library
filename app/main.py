@@ -1,11 +1,9 @@
 from flask import Flask, request, render_template
 from models import Author, Book
 from psycopg2 import connect, OperationalError
+import os
 
-USER = "postgres"
-PASSWORD = "coderslab"
-HOST = "localhost"
-DATABASE = "library_db"
+DATABASE_URL = os.environ['DATABASE_URL']
 
 app = Flask(__name__)
 
@@ -43,7 +41,7 @@ def add_book_to_db():
 
 @app.route('/books', methods=['GET'])
 def show_all_books():
-    cnx = connect(database=DATABASE, user=USER, password=PASSWORD, host=HOST)
+    cnx = connect(DATABASE_URL, sslmode='require')
     cursor = cnx.cursor()
     cnx.autocommit = True
     books = Book.load_all_books(cursor)
