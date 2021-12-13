@@ -15,7 +15,7 @@ def index():
 
 @app.route('/add_book', methods=['GET', 'POST'])
 def add_book_to_db():
-    cnx = connect(database=DATABASE, user=USER, password=PASSWORD, host=HOST)
+    cnx = connect(DATABASE_URL, sslmode='require')
     cursor = cnx.cursor()
     cnx.autocommit = True
     if request.method == "GET":
