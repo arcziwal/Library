@@ -10,6 +10,11 @@ DATABASE = "library_db"
 app = Flask(__name__)
 
 
+@app.route('/')
+def index():
+    return "Hello and welcome on my site"
+
+
 @app.route('/add_book', methods=['GET', 'POST'])
 def add_book_to_db():
     cnx = connect(database=DATABASE, user=USER, password=PASSWORD, host=HOST)
