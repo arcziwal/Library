@@ -22,7 +22,9 @@ def connect_to_test_db():
 
 def connect_to_production_db():
     cnx = connect(DATABASE_URL, sslmode='require')
-    return cnx
+    cnx.autocommit = True
+    cursor = cnx.cursor()
+    return cnx, cursor
 
 
 @app.route('/')
