@@ -10,6 +10,7 @@
     <th>Tytuł</th>
     <th>Autor</th>
     <th>Numer ISBN</th>
+    <th></th>
     </thead>
 
     <tbody>
@@ -18,6 +19,7 @@
                 <td>{{ book[0] }}</td>
                 <td>{{ book[1] }}</td>
                 <td>{{ book[2] }}</td>
+                <td><a href="/book_details/{{ book[3] }}">Więcej szczegółów</a></td>
             </tr>
         {% endfor %}
     </tbody>

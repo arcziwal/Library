@@ -42,7 +42,6 @@ class Author:
     def load_author_by_full_name(cursor, author_full_name):
         sql = f"SELECT id FROM authors WHERE full_name=%s"
         value = str(author_full_name)
-        print(value)
         cursor.execute(sql, (value,))
         author_id = cursor.fetchone()[0]
         return author_id
@@ -53,6 +52,7 @@ class Author:
         cursor.execute(sql, (author_id,))
         author_full_name = cursor.fetchone()[0]
         return author_full_name
+
 
 class Book:
     def __init__(self, title="", isbn="", author_id=-1, description=""):
@@ -95,6 +95,15 @@ class Book:
             books.append(book)
         return books
 
+    def check_if_isbn_in_db(self, cursor):
+        sql = "SELECT isbn FROM books WHERE isbn=%s"
+        cursor.execute(sql, (self.isbn,))
+        result = cursor.fetchone()
+        if result is not None:
+            return False
+        else:
+            return True
+
     @staticmethod
     def load_book_by_id(cursor, book_id):
         sql = "SELECT title, isbn, author_id, description FROM books WHERE id=%s"
@@ -107,3 +116,40 @@ class Book:
         book.author_id = book_author_id
         book.description = book_description
         return book
+
+    @staticmethod
+    def load_book_by_isbn(cursor, isbn):
+        sql = "SELECT id, title, author_id, description FROM books WHERE isbn=%s"
+        cursor.execute(sql, (isbn,))
+        id_, book_title, book_author_id, book_description = cursor.fetchone()
+        book = Book()
+        book._id = id_
+        book.title = book_title
+        book.isbn = isbn
+        book.author_id = book_author_id
+        book.description = book_description
+        return book
+
+    @staticmethod
+    def load_titles(cursor):
+        sql = "SELECT title FROM books"
+        titles = []
+        cursor.execute(sql)
+        for row in cursor.fetchall():
+            titles.append(row)
+        return titles
+
+    @staticmethod
+    def load_isbn_list(cursor):
+        sql = "SELECT isbn FROM books"
+        isbn_list = []
+        cursor.execute(sql)
+        for row in cursor.fetchall():
+            isbn_list.append(row)
+        return isbn_list
+
+    def delete_book_from_db(self, cursor):
+        sql = "DELETE FROM books WHERE id = %s"
+        cursor.execute(sql, (self._id,))
+        return True
+
